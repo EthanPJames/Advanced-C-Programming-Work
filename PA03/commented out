@@ -1,0 +1,47 @@
+ /*int x = variables->floor_length; //Rows
+    int y = variables->floor_length; //Columns
+    
+    int count = 0; 
+
+    //Base case (what we want to get down to to solve the tiling function (2x2))
+    if(variables->floor_length == 2)
+    {
+        count = count + 1;
+        for(int i = 0; i < variables->floor_length; i++)
+        {
+            for(int j = 0; j < variables->floor_length; j++)
+            {
+                if((variables->floor_content[x + i][y + i]) == 0) //What should this 0 be
+                {
+                    variables->floor_content[x + i][y + i] = count;
+                }
+            }
+            return; //We are done if the base case is satisfied
+        }
+
+    }
+    //Now we know where the column and row is of the 4 tile
+    variables->row = ts->row;
+    variables->column = ts->column;
+
+    //First quadrant if it contains 4 tile
+    if((variables->row < (x + (variables->floor_length / 2))) && (variables->column < (y + (variables->floor_length / 2))))
+    {
+        array_fill(x + (variables->floor_length / 2), y + (variables->floor_length / 2) - 1, x + variables->floor_length / 2, y + variables->floor_length / 2, x + variables->floor_length / 2 - 1, y + variables->floor_length / 2 );
+    }
+    //Third quadrant if it contains 4 tile
+    if((variables->row >= x + variables->floor_length/2) && (variables->column >= y + variables->floor_length/2))
+    {
+        array_fill(x + variables->floor_length/2 - 1, y + (variables->floor_length/2), x + (variables->floor_length/2), y + variables->floor_length/2, x + variables->floor_length/2 - 1, y + (variables->floor_length/2));
+    }
+    //Second quadrant if it contains 4 tile
+    if((variables->row < x + variables->floor_length/2) && (variables->column >= y + variables->floor_length/2))
+    {
+        array_fill(x + variables->floor_length/2, y + (variables->floor_length/2) - 1, x + variables->floor_length/2, y + variables->floor_length/2, x + variables->floor_length/2 -1, y + variables->floor_length/2 -1);
+    }
+    //Fourth quadrant if it contains 4 tile
+    if((variables->row >= x + variables->floor_length/2) && (variables->column >= y + variables->floor_length/2))
+    {
+        array_fill(x + (variables->floor_length/2) -1, y + (variables->floor_length/2), x + (variables->floor_length/2), y + (variables->floor_length) -1, x + (variables->floor_length)- 1, y + (variables->floor_length/2)-1);
+    }
+    */
