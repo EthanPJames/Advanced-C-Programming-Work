@@ -1,0 +1,141 @@
+BMP_image *convert_24_to_16_BMP_image(BMP_image *image)
+{
+  BMP_image *new =  malloc(sizeof(*image));
+    if(new == NULL)
+    {
+      printf("Enter 13\n\n");
+        return(NULL);
+    }
+    
+    
+    
+    new->header = image->header; ////Set the old struct equal to the new struct
+    
+    new->header.bits = 16; //Number of bits changes
+    
+    int math_24bit1 = ((new->header.width * 3 * 8) + 31); //First part of eqution
+    int math_24bit2 = ((math_24bit1 / 32) * 4);//Second part of equation 
+    //padding check calc
+    int padding = 0;
+    int pad_math = 0;
+    pad_math = (image->header.width * 2) % 4; //Calculates amount of padding Should be times 2
+    padding = padding + pad_math; //Sums up the amount of padding 
+    
+    new->header.imagesize = ((2 * new->header.width) + padding) * new->header.height;
+    new->header.size = 54 + new->header.imagesize;
+
+    new->data = calloc((new->header.imagesize), sizeof(*(new->data)));
+
+    
+    if(new == NULL)
+    {
+        printf("Enter 15\n\n");
+        //free(new); //possible memeory error
+        return(NULL);
+    }
+    
+    int red = 0;
+    int green = 0;
+    int blue = 0;
+
+    int byte0 = 0;
+    int byte1 = 0;
+    int byte2 = 0;
+    int control = 0;
+    int control2 = 0;
+    
+    
+    while(control < (image->header.imagesize))
+    {
+        byte0 = image->data[control] >> 3;
+        byte1 = image->data[control + 1] >> 3;
+        byte2 = image->data[control + 2] >> 3;
+        int combination = (byte1 << 5) | (byte2 << 10) | (byte0);
+        
+        new->data[control2] = combination >> 8;
+        control2 = control2 + 1;
+        new ->data[control2] = (combination & 255);
+        control2 = control2 + 1;
+        
+        if(control2 == ((image->header.width *2) - 1)) 
+        {
+            control2 = control2 + padding;
+        }
+        control = control + 1;
+        
+    }
+  return(new);
+}
+
+//Convert 16 to 24 code
+BMP_image *new =  malloc(sizeof(*image));
+    if(new == NULL)
+    {
+       printf("Enter 17\n\n");
+        return(NULL);
+    }
+    //Reading in padding check
+    int storepad_old = ((image->header.width * image->header.height) % 2 ) * 2; //???Possible error
+    int storepad_new = ((image->header.width * image->header.height) % 4 ); 
+    
+
+    new->header = image->header; ////Set the old struct equal to the new struct
+    new->header.imagesize = (1.5 * image->header.imagesize) + (storepad_new * new->header.height);
+    new->header.size = new->header.imagesize + 54; //Just for the file size
+    new->header.bits = 24;
+
+    new->data = calloc((new->header.imagesize), sizeof(*(new->data)));
+    if(new == NULL)
+    {
+       printf("Enter 18\n\n");
+      
+        return(NULL);
+    }
+    
+    
+    //Loop variables
+    int control = 0; //While loop control
+    int control2 = 0; //Control for alocating new array
+    int red = 0; //red start value
+    int blue = 0; //Blue start value
+    int green = 0; //Green start value
+    int byte0; //First byte size conversion
+    int byte1; //Second byte size conversions
+    int combo; //Concateneater byte 0 and byte 1
+    while(control < image->header.imagesize)
+    {
+        //This accounts for padding from 16 bit image //Is this correct???????????
+        if(control == ((image->header.width * 2) - 1)) //Minus 1 to account for 0 index
+        {
+          control = control + storepad_old;
+           
+        }
+        
+        //This accounts for padding from 24 bit image //Is this correct?????????????????????
+        if(control2 == ((image->header.width * 3) - 1))
+        {
+          control2 = control2 + storepad_new;
+        }
+
+        byte0 = image->data[control];
+        byte1 = image->data[control + 1];
+        byte0 = byte0 << 8; //Shift byte 0 over 8
+
+        combo = byte0 | byte1; //Basically adds them together, concatenates them
+
+        red = combo >> 10; //shift red over 10
+        red = red * 255/31;
+        blue = (combo & 31);
+        blue = blue * 255/31;
+        green = (combo >> 5) & (31);
+        green = green * 255/31;
+
+        new->data[control2] = red;
+        control2 = control2 + 1;
+        new ->data[control2] = green;
+        control2 = control2 + 1;
+        new->data[control2] = blue;
+        control2 = control2 + 1;
+
+        control = control + 2;
+    }
