@@ -1,0 +1,237 @@
+#include "answer09.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <limits.h>
+#include <errno.h>
+
+//This function creates the priority que for the list nodes
+//Do i need to malloc for the tree here or add the entire tree here??????????????????????
+lnode *PQ_enqueue(lnode **pq, int new_object, long frequency)
+{
+   /*if(new_object == NULL)
+   {
+      return(NULL);
+   }*/
+   lnode *new_node = malloc(sizeof(*new_node));
+   if(new_node == NULL)
+   {
+      return;
+   }
+   new_node->tree.info = new_object;
+   new_node->tree.frequency = frequency;
+
+   lnode dummy = {.next = *pq};
+   lnode *prev = &dummy;
+   lnode *cur = *pq;
+
+ 
+    while(cur != NULL)
+    {
+        if(cur->tree.frequency > frequency)
+        {
+            break;
+        }
+        if(cur->tree.frequency == frequency)
+        {
+            if(cur->tree.info >= new_object)
+            {
+                break;
+            }
+
+        }
+        
+        prev = cur;
+        cur = cur->next;
+    }
+   prev->next = new_node;
+   new_node->next = cur;
+   *pq = dummy.next;
+   return(new_node);
+   
+}
+//Check this entire function, should i return the entire tree or just the info???????
+//Might have to add the entire tree to this function???????????????????????????????????
+int *PQ_dequeue(lnode **pq)
+{
+   if(*pq == NULL)
+   {
+      return(NULL);
+   }
+
+   lnode *temp = *pq;
+   *pq = temp->next; //Fix the pointer
+   int *address = temp->tree.info; //Swwitch to int becase you are always given an int
+   free(temp);
+   
+   return(address);
+   //Is this correc???????????????????????????????????????????????????????????????????????? 
+   
+}
+//Create link list ???????????????????????????????????
+void link_create(lnode **list, FILE *fp)
+{
+    fseek(fp, 0, SEEK_SET);
+    long int *weight = frequency_calc(fp);
+    lnode *newnode;
+    for(int i = 0; i < 256; i++)
+    {
+        //Create link list
+        if(weight[i] > 0)
+        {
+            treenode *tree_new = malloc(sizeof(*tree_new));
+            tree_new->frequency = weight[i];
+            tree_new->info = i;
+            tree_new->right = NULL;
+            tree_new->left = NULL;
+            PQ_enqueue(&list, tree_new); //FIX THIS PORTION
+            
+        }
+    }
+}
+//Create tree function - should be a recursive call
+void tree_create(lnode *list, int info)
+{
+
+
+}
+
+//Create destory function link node
+//Create destroy function tree node
+//Create pragma pop - maybe
+//Creat pragma push - maybe 
+
+//Create the linked list
+//Calc frequency table
+long int *frequency_calc(FILE *fp)
+{
+    long int array[256] = {0};
+    fseek(fp, 0, SEEK_SET); 
+    int index = fgetc(fp);
+    while(index != EOF) //Check later to iterate to the file????????????????????????????????????
+    {
+        array[index] += 1;
+        index = fgetc(fp);
+
+    }
+    return(array);
+
+}
+
+
+
+
+
+
+//Print to file one
+int print_a_func1(char *filename, FILE *fp)
+{
+    FILE *open = fopen(filename, "wb");
+    if(open == NULL)
+    {
+        return(0);
+    }
+    long int array[256] = {0}; //???Should be 256 I beleive?????????????
+    fseek(fp, 0, SEEK_SET); 
+    int index = fgetc(fp);
+    while(index != EOF) //Check later to iterate to the file????????????????????????????????????
+    {
+        array[index] += 1;
+        index = fgetc(fp);
+
+    }
+    fwrite(array, sizeof(array[0]), 256, open); //Write the entire array to the file output
+    fclose(open);
+    return(1);
+    //Debugging
+    //run a dif command to debug compare between this and output file
+    //print the array and see whats happening
+
+}
+
+
+
+//Print to 2nd output File
+int print_a_func2(char *filename, FILE *fp)
+{
+    FILE *open = fopen(filename, "w");
+    if(open == NULL)
+    {
+        return(0);
+    }
+    //Create Link lIst start
+    long int *weight = frequency_calc(fp);
+    lnode *newnode;
+    for(int i = 0; i < 256; i++)
+    {
+        //Create link list
+        if(weight[i] != 0)
+        {
+            newnode = PQ_enqueue(&newnode, i, weight[i]);
+            
+        }
+    }
+    //Create Link list end
+    while(newnode != NULL)
+    {
+        fprintf(open, "%c", newnode->tree.info); //If i fprintf a character will it automatically bring me down to a new line???????????
+        fprintf(open,":");
+        fprintf(open, "%ld", newnode->tree.frequency);
+        fprintf(open, "->");
+
+
+        newnode = newnode->next;
+    }
+    printf(open, "NULL");
+
+    fclose(open);
+    return(1);
+
+}
+//Print to 3rd output file
+int print_a_funct3(char *filename, treenode *tree)
+{
+    FILE *open = fopen(filename, "w");
+    if(open == NULL)
+    {
+        return(0);
+    }
+
+    fseek(open, 0, SEEK_SET);
+    pre_print_traversal(open, tree);
+    fclose(open);
+    return(1);
+
+
+
+}
+
+void pre_print_traversal(char *file_open, treenode *tree)
+{
+    if(tree == NULL)
+    {
+        return;
+    }
+    if(tree->info < 32)//Nothing inside the node making a non-leaf node and we want to print 0
+    {
+        fprintf(file_open, "0");
+        
+    }
+    else
+    {
+        fprintf(file_open, "1");
+        fprintf(file_open, "%c", tree->info);
+    }
+    pre_print_traversal(file_open, tree->left);
+    pre_print_traversal(file_open, tree->right);
+
+}
+
+
+//Printf to fourth output file
+//Possible Extra credit
+int print_a_func4()
+{
+    return(NULL);
+}
